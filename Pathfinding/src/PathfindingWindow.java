@@ -21,6 +21,8 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 
 	JFrame window;
 
+	Pathfinding pathfinding;
+
 	private Node startNode;
 	private Node endNode;
 
@@ -41,6 +43,8 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 	 */
 	public PathfindingWindow() {
 		size = 16;
+
+		pathfinding = new Pathfinding(size, this);
 
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -65,7 +69,7 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 		int height = getHeight();
 		int width = getWidth();
 
-		// draws the grid on the frame.
+		// Draws the grid on the frame.
 		g.setColor(Color.DARK_GRAY);
 		for (int i = 0; i < height; i += size) {
 			for (int j = 0; j < width; j += size) {
@@ -73,7 +77,47 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 			}
 		}
 
-		// Draws the start node with a cyan color.
+		// Draws the walls that the algorithm can not pass through.
+		g.setColor(Color.BLACK);
+		for (int i = 0; i < pathfinding.getBorderNodeList().size(); i++) {
+
+			int xCoord = pathfinding.getBorderNodeList().get(i).getXCoordinate();
+			int yCoord = pathfinding.getBorderNodeList().get(i).getYCoordinate();
+
+			g.fillRect(xCoord, yCoord, getSquareSize(), getSquareSize());
+		}
+
+		// Draws the nodes that are now closed.
+		g.setColor(Color.RED);
+		for (int i = 0; i < pathfinding.getClosedNodeList().size(); i++) {
+
+			int xCoord = pathfinding.getClosedNodeList().get(i).getXCoordinate();
+			int yCoord = pathfinding.getClosedNodeList().get(i).getYCoordinate();
+
+			g.fillRect(xCoord, yCoord, getSquareSize(), getSquareSize());
+		}
+
+		// Draws the nodes that are now open.
+		g.setColor(Color.GREEN);
+		for (int i = 0; i < pathfinding.getOpenNodeList().size(); i++) {
+
+			int xCoord = pathfinding.getOpenNodeList().get(i).getXCoordinate();
+			int yCoord = pathfinding.getOpenNodeList().get(i).getYCoordinate();
+
+			g.fillRect(xCoord, yCoord, getSquareSize(), getSquareSize());
+		}
+
+		// Draws the nodes that are on the path.
+		g.setColor(Color.ORANGE);
+		for (int i = 0; i < pathfinding.getPathNodeList().size(); i++) {
+
+			int xCoord = pathfinding.getPathNodeList().get(i).getXCoordinate();
+			int yCoord = pathfinding.getPathNodeList().get(i).getYCoordinate();
+
+			g.fillRect(xCoord, yCoord, getSquareSize(), getSquareSize());
+		}
+
+		// Draws the start node with a blue color.
 		if (startNode != null) {
 			g.setColor(Color.BLUE);
 			g.fillRect(startNode.getXCoordinate(), startNode.getYCoordinate(), size, size);
@@ -84,7 +128,6 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 			g.setColor(Color.RED);
 			g.fillRect(endNode.getXCoordinate(), endNode.getYCoordinate(), size, size);
 		}
-
 	}
 
 	/**
@@ -157,6 +200,7 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		cursorLocation(e);
 	}
 
 	@Override
@@ -192,7 +236,11 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 			}
 			// Start and End node is on the grid, create a wall.
 			else {
-				// Create here.
+				int xCoord = e.getX() - (e.getX() % getSquareSize());
+				int yCoord = e.getY() - (e.getY() % getSquareSize());
+
+				Node wall = new Node(xCoord, yCoord);
+				pathfinding.addBorderNode(wall);
 			}
 			repaint();
 		}
@@ -209,6 +257,17 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 			// Compares the current clicked location to end node.
 			if (getEndNode() != null && Node.isEqual(clicked, getEndNode())) {
 				setEndNode(null);
+			}
+
+			// Neither start or end node, if wall remove it.
+			else {
+				int xCoord = e.getX() - (e.getX() % getSquareSize());
+				int yCoord = e.getY() - (e.getY() % getSquareSize());
+
+				int index = pathfinding.findBorderNode(xCoord, yCoord);
+				if (index != -1) {
+					pathfinding.removeBorderNode(index);
+				}
 			}
 			repaint();
 		}
