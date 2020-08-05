@@ -25,6 +25,8 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 
 	private Node startNode;
 	private Node endNode;
+	
+	private boolean steps;
 
 	private int size;
 
@@ -43,6 +45,7 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 	 */
 	public PathfindingWindow() {
 		size = 16;
+		steps = true;
 
 		pathfinding = new Pathfinding(size, this);
 
@@ -57,6 +60,7 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 		window.pack();
 		window.setVisible(true);
 
+		repaint();
 	}
 
 	/**
@@ -129,6 +133,12 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 			g.fillRect(endNode.getXCoordinate(), endNode.getYCoordinate(), size, size);
 		}
 	}
+	
+	public void start() {
+		if (startNode != null && endNode != null) {
+				pathfinding.start(startNode, endNode);
+		}
+	}
 
 	/**
 	 * getStartNode - gets the start node.
@@ -171,6 +181,15 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 	 */
 	public void setEndNode(Node node) {
 		endNode = node;
+	}
+	
+	/**
+	 * showSteps - returns if steps should be displayed.
+	 * 
+	 * @return boolean if yes or no.
+	 */
+	public boolean showSteps() {
+		return steps;
 	}
 
 	/*****************************************************/
@@ -233,6 +252,7 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 				if (!Node.isEqual(end, getStartNode())) {
 					setEndNode(end);
 				}
+				start();
 			}
 			// Start and End node is on the grid, create a wall.
 			else {
