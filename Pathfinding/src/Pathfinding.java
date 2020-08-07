@@ -125,7 +125,6 @@ public class Pathfinding {
 
 		addClosedNode(startNode);
 
-		System.out.println("made it to start pathfinding");
 		findPath(startNode);
 
 		isComplete = true;
@@ -382,6 +381,13 @@ public class Pathfinding {
 		return index;
 	}
 
+	/**
+	 * getOpenNode - retrieves the desired node in openNodes.
+	 * 
+	 * @param xCoord the x coordinate.
+	 * @param yCoord the y coordinate.
+	 * @return Node the desired node.
+	 */
 	public Node getOpenNode(int xCoord, int yCoord) {
 		for (int i = 0; i < openNodes.size(); i++) {
 			if (openNodes.get(i).getXCoordinate() == xCoord && openNodes.get(i).getYCoordinate() == yCoord) {
@@ -623,5 +629,24 @@ public class Pathfinding {
 			return openNodes.get(0);
 		}
 		return null;
+	}
+
+	/**
+	 * reset - resets the algorithm.
+	 */
+	public void reset() {
+		isRunning = false;
+		isComplete = false;
+		isRunningPath = true;
+
+		frame.setStartNode(null);
+		frame.setEndNode(null);
+		startNode = null;
+		endNode = null;
+
+		borderNodes = new ArrayList<Node>();
+		openNodes = new ArrayList<Node>();
+		closedNodes = new ArrayList<Node>();
+		pathNodes = new ArrayList<Node>();
 	}
 }

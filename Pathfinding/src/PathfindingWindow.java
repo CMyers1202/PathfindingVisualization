@@ -1,6 +1,10 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -15,7 +19,8 @@ import javax.swing.SwingUtilities;
  * @author Chase Myers
  *
  */
-public class PathfindingWindow extends JPanel implements MouseListener, MouseMotionListener {
+public class PathfindingWindow extends JPanel
+		implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -25,7 +30,7 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 
 	private Node startNode;
 	private Node endNode;
-	
+
 	private boolean steps;
 
 	private int size;
@@ -51,10 +56,12 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		addKeyListener(this);
 
 		window = new JFrame();
 		window.setTitle("A* Pathfinding Visualization");
 		window.setContentPane(this);
+		window.getContentPane().setFocusable(true);
 		window.getContentPane().setPreferredSize(new Dimension(800, 800));
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.pack();
@@ -133,10 +140,13 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 			g.fillRect(endNode.getXCoordinate(), endNode.getYCoordinate(), size, size);
 		}
 	}
-	
+
+	/**
+	 * start - starts the algorithm.
+	 */
 	public void start() {
 		if (startNode != null && endNode != null) {
-				pathfinding.start(startNode, endNode);
+			pathfinding.start(startNode, endNode);
 		}
 	}
 
@@ -182,7 +192,7 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 	public void setEndNode(Node node) {
 		endNode = node;
 	}
-	
+
 	/**
 	 * showSteps - returns if steps should be displayed.
 	 * 
@@ -252,7 +262,6 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 				if (!Node.isEqual(end, getStartNode())) {
 					setEndNode(end);
 				}
-				start();
 			}
 			// Start and End node is on the grid, create a wall.
 			else {
@@ -291,5 +300,30 @@ public class PathfindingWindow extends JPanel implements MouseListener, MouseMot
 			}
 			repaint();
 		}
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+			start();
+		}
+		if (e.getKeyChar() == 'R' || e.getKeyChar() == 'r') {
+			pathfinding.reset();
+			repaint();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 }
